@@ -1,6 +1,16 @@
 /* Default CSS for eba and OW */
 
-/* Default style for some basic elements */
+/******************************************************************************/
+/*********************Default style for some basic elements********************/
+/******************************************************************************/
+
+.caml_c.caml_c.caml_c {
+    height: 100%;
+}
+
+body {
+    height: inherit;
+}
 
 a {
   text-decoration: none;
@@ -21,31 +31,50 @@ input[type="submit"]:focus {
   outline: 2px solid #ddd;
 }
 
-/* Login box */
+/******************************************************************************/
+/**********************************Login box***********************************/
+/******************************************************************************/
+
 div#eba_login_signup_box {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: auto;
-  width: 560px;
-  padding: 0 20px;
+    position: absolute;
+    color: #4183c4;
+    height: auto;
+    width: auto;
+    right: 100px;
+}
+@media only screen and (max-width : 1750px){
+    div#eba_login_signup_box{
+	position: unset;
+	width: 100%;
+	background-color: var(--bg-color);
+    }
 }
 div#eba_login_signup_box form {
   text-align: left;
   height: auto;
 }
+
 div#eba_login_signup_box input {
   display: inline-block;
   margin: 0 10px 10px 0;
   width: 120px;
 }
-div#eba_login_signup_box label {
-  margin: 0 10px 0 0;
+
+div#eba_login_signup_box input[type="checkbox"] {
+  width: 10px;
 }
+
+div#eba_login_signup_box span {
+    margin-right: 10px
+}
+
+div#eba_login_signup_box label {
+    margin: 0 10px 0 0;
+}
+
 div#eba_login_signup_box h2 {
   display: inline;
   margin: 0 10px 0 0;
-  color: #ddd;
   cursor: pointer;
   font-size: 12px;
 }
@@ -53,9 +82,21 @@ div#eba_login_signup_box h2.pressed {
   color: black;
 }
 
-/* User box */
+/******************************************************************************/
+/**********************************User box************************************/
+/******************************************************************************/
+
 #eba-user-box {
-  position: relative;
+  position: absolute;
+  right: 0;
+  width: 500px;
+}
+@media only screen and (max-width: 1750px){
+    #eba-user-box {
+	position: unset;
+	background-color: var(--bg-color);
+	width: 100%;
+    }
 }
 
 #eba-user-box img,
@@ -72,7 +113,7 @@ div#eba_login_signup_box h2.pressed {
 }
 
 #eba-user-box div.eba_username {
-  padding: 0px 8px;
+  padding: 8px 8px;
 }
 
 #eba-user-box i.fa {
@@ -83,12 +124,10 @@ div#eba_login_signup_box h2.pressed {
 }
 #eba-user-box div.eba_usermenu {
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 10px;
+  top: 0px;
 }
 #eba-user-box div.eba_usermenu_button {
-  position: relative;
-  right: 0;
   cursor: pointer;
   width: 50px;
 }
@@ -106,7 +145,23 @@ div#eba_login_signup_box h2.pressed {
   display: none;
 }
 
-/* Messages */
+.ot-pup-submit,
+.eba_usermenu .button {
+    display: block ;
+    padding: 8px ;
+    width: 100% ;
+    font-weight: bold ;
+}
+.eba_usermenu .ot-icon-sign-out { margin-right: 8px ; }
+.eba_usermenu .ot-icon-sign-out::before,
+.eba_usermenu .ot-icon-sign-out::after {
+    border-color: white ;
+}
+
+/******************************************************************************/
+/********************************Messages**************************************/
+/******************************************************************************/
+
 div#eba_msg {
   position: fixed;
   top: 0;
@@ -169,8 +224,10 @@ div.ow_pic_uploader img {
   width: 800px;
 }
 
+/******************************************************************************/
+/**********************************Tips****************************************/
+/******************************************************************************/
 
-/* Tips */
 div.tip.bubble {
   position: absolute;
   margin: 20px;
@@ -199,8 +256,10 @@ div.coltip {
   width: 300px;
 }
 
+/******************************************************************************/
+/******************************Closed process**********************************/
+/******************************************************************************/
 
-/* Closed process */
 div.eba_process_closed {
   position: fixed;
   height: 100%;
