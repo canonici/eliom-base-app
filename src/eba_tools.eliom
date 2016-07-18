@@ -1,4 +1,59 @@
 
+[%%shared
+ module NavigationBar : sig
+
+   type service = (
+     unit,
+     unit,
+     Eliom_service.get,
+     Eliom_service.att,
+     Eliom_service.non_co,
+     Eliom_service.non_ext,
+     Eliom_service.reg,
+     [ `WithoutSuffix ],
+     unit,
+     unit,
+     Eliom_service.non_ocaml
+   ) Eliom_service.t
+
+   type elt = string * service
+
+   val of_elt_list :
+     ?elt_class:string list -> elt list -> [>`Ul] Eliom_content.Html.F.elt Lwt.t
+
+ end = struct
+
+   type service = (
+     unit,
+     unit,
+     Eliom_service.get,
+     Eliom_service.att,
+     Eliom_service.non_co,
+     Eliom_service.non_ext,
+     Eliom_service.reg,
+     [ `WithoutSuffix ],
+     unit,
+     unit,
+     Eliom_service.non_ocaml
+   ) Eliom_service.t
+
+   type elt = string * service
+
+   let li_of_elt elt = Eliom_content.Html.F.(
+     let text, service = elt in
+     li [a ~service [pcdata text] ()]
+   )
+
+   let of_elt_list ?(elt_class = []) elt_list = Eliom_content.Html.F.(
+     Lwt.return
+     @@ ul ~a:[a_class elt_class]
+     @@ List.map li_of_elt elt_list
+   )
+
+ end
+]
+
+
 let%shared popup_button
     ~button_name
     ?(button_class = ["eba_popup_button"])
