@@ -1,6 +1,8 @@
 
-let%shared generic_email_form ~service = Eliom_content.Html.F.(
-    Eliom_content.Html.D.Form.post_form ~xhr:false ~service
+let%client generic_email_form = Eba_view.generic_email_form
+
+let%server generic_email_form ~service () = Eliom_content.Html.D.(
+  Form.post_form ~service ~xhr:false
       (fun name ->
 	[
           Form.input
@@ -19,10 +21,10 @@ let%shared generic_email_form ~service = Eliom_content.Html.F.(
 )
 
 let%shared sign_up_form () =
-  generic_email_form ~service:Eba_services.sign_up_service'
+  generic_email_form ~service:Eba_services.sign_up_service' ()
 
 let%shared forgot_password_form () =
-  generic_email_form ~service:Eba_services.forgot_password_service
+  generic_email_form ~service:Eba_services.forgot_password_service ()
 
 let%shared forgotpwd_button () = Eliom_content.Html.D.(
   let popup_content = fun () -> Lwt.return @@
