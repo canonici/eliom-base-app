@@ -54,33 +54,11 @@ let%shared eba_footer () = Eliom_content.Html.F.(
   ]
 )
 
-let%server connected_welcome_box () = Eliom_content.Html.F.(
-  let info, ((fn, ln), (p1, p2)) =
-    match Eliom_reference.Volatile.get Eba_msg.wrong_pdata with
-    | None ->
-      p [
-        pcdata "Your personal information has not been set yet.";
-        br ();
-        pcdata "Please take time to enter your name and to set a password."
-      ], (("", ""), ("", ""))
-    | Some wpd -> p [pcdata "Wrong data. Please fix."], wpd
-  in
-  div ~a:[a_class ["eba_login_menu";"eba_welcome_box"]] [
-    div [h2 [pcdata ("Welcome!")]; info];
-    Eba_view.information_form
-      ~firstname:fn ~lastname:ln
-      ~password1:p1 ~password2:p2
-      ()
-  ]
-)
-
 let%server get_wrong_pdata () =
   Lwt.return @@ Eliom_reference.Volatile.get Eba_msg.wrong_pdata
 
-let%client get_wrong_pdata_rpc =
+let%client get_wrong_pdata =
   ~%(Eliom_client.server_function [%derive.json : unit] get_wrong_pdata)
-
-let%client get_wrong_pdata () = get_wrong_pdata_rpc ()
 
 let%shared connected_welcome_box () = Eliom_content.Html.F.(
   let%lwt wrong_pdata = get_wrong_pdata () in
