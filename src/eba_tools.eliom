@@ -1,6 +1,6 @@
 
 [%%shared
- module NavigationBar : sig
+ module Navigation_bar : sig
 
    type service = (
      unit,
@@ -18,8 +18,8 @@
 
    type elt = string * service
 
-   val of_elt_list :
-     ?elt_class:string list -> elt list -> [>`Ul] Eliom_content.Html.F.elt Lwt.t
+   val ul_of_elts :
+     ?ul_class:string list -> elt list -> [>`Ul] Eliom_content.Html.F.elt Lwt.t
 
  end = struct
 
@@ -44,9 +44,9 @@
      li [a ~service [pcdata text] ()]
    )
 
-   let of_elt_list ?(elt_class = []) elt_list = Eliom_content.Html.F.(
+   let ul_of_elts ?(ul_class = []) elt_list = Eliom_content.Html.F.(
      Lwt.return
-     @@ ul ~a:[a_class elt_class]
+     @@ ul ~a:[a_class ul_class]
      @@ List.map li_of_elt elt_list
    )
 
