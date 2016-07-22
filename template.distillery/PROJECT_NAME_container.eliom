@@ -11,8 +11,8 @@ let%shared navigation_bar =
     ("Demo",%%%MODULE_NAME%%%_services.otdemo_service)
   ] in
   fun () ->
-    Eba_tools.NavigationBar.of_elt_list
-      ~elt_class:["nav";"navbar-nav"]
+    Eba_tools.Navigation_bar.ul_of_elts
+      ~ul_class:["nav";"navbar-nav"]
       nav_elts
 
 let%shared eba_header ?user () = Eliom_content.Html.F.(
