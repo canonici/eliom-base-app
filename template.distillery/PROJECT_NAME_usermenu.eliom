@@ -13,10 +13,10 @@ let%shared user_menu close user service = Eliom_content.Html.D.(
 )
 
 let%shared user_menu user service = Eliom_content.Html.D.(
-  let but = div ~a:[a_class ["btn";"eba_usermenu_button"]]
+  let but = div ~a:[a_class ["btn";"eba-usermenu-button"]]
     [pcdata "Menu"]
   in
-  let menu = div ~a:[a_class ["navbar-inverse";"usermenu_pop"]] [] in
+  let menu = div ~a:[a_class ["navbar-inverse";"usermenu-pop"]] [] in
   ignore
     (Ow_button.button_dyn_alert but menu
        [%client (fun _ _ ->
@@ -25,5 +25,5 @@ let%shared user_menu user service = Eliom_content.Html.D.(
            o##unpress
          in
          Lwt.return (user_menu close ~%user ~%service): 'a -> 'b)]);
-  div ~a:[a_class ["eba_usermenu"]] [but; menu]
+  div ~a:[a_class ["eba-usermenu"]] [but; menu]
 )

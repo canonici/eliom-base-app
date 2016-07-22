@@ -71,11 +71,11 @@ form input{
 }
 
 /* Connected userbox and user settings */
-.connected_user_box {
+.connected-user-box {
     width: auto;
     display: flex;
 }
-.connected_user_box i {
+.connected-user-box i {
     height: auto;
     width: auto;
 }
@@ -87,14 +87,14 @@ form input{
     font-size: 120%;
 }
 
-.eba_usermenu {
+.eba-usermenu {
     position: relative;
     width: 90px;
     padding: 5px 5px;
     text-align: center;
 }
 
-.usermenu_pop {
+.usermenu-pop {
     position: absolute;
     top: 80px;
     right: 15px;
@@ -107,7 +107,7 @@ form input{
     width: auto;
 }
 
-.usermenu_pop .button {
+.usermenu-pop .button {
     border: solid 1px;
     border-radius: 10px;
     border-width: 2px;
@@ -117,7 +117,7 @@ form input{
 }
 
 /* Body */
-.eba_body {
+.eba-body {
     text-align: center;
     width: 80%;
     margin-left: auto;
@@ -126,7 +126,7 @@ form input{
 }
 
 /*Login Menu*/
-.eba_login_menu .button {
+.eba-login-menu .button {
     border: solid 1px;
     border-radius: 10px;
     border-width: 2px;
@@ -135,25 +135,25 @@ form input{
     font-size: 120%;
     margin-left: 10px;
 }
-.eba_login_menu input {
+.eba-login-menu input {
     border-radius: 5px;
     margin: 5px;
     font-size: 150%;
     padding: 5px;
 }
-.eba_login_menu form {
+.eba-login-menu form {
     display: table-caption;
     text-align: center;
 }
 
 /* Welcome box */
-.eba_welcome_box {
+.eba-welcome-box {
     text-align: center;
     margin-left: auto;
     margin-right: auto;
     display: inline-block;
 }
-.eba_welcome_box .button {
+.eba-welcome-box .button {
     color: black;
 }
 

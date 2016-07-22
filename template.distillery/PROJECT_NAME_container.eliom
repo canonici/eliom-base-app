@@ -73,7 +73,7 @@ let%shared connected_welcome_box () = Eliom_content.Html.F.(
     | Some wpd -> p [pcdata "Wrong data. Please fix."], wpd
   in
   Lwt.return @@
-    div ~a:[a_class ["eba_login_menu";"eba_welcome_box"]] [
+    div ~a:[a_class ["eba-login-menu";"eba-welcome-box"]] [
       div [h2 [pcdata ("Welcome!")]; info];
       Eba_view.information_form
 	~firstname:fn ~lastname:ln
@@ -99,7 +99,7 @@ let%shared page userid_o content = Eliom_content.Html.F.(
       Lwt.return @@ content
   in
   let l = [
-    div ~a:[a_class ["eba_body"]] content;
+    div ~a:[a_class ["eba-body"]] content;
     eba_footer ();
   ] in
   let%lwt h = eba_header ?user () in

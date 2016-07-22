@@ -29,7 +29,7 @@ let msg () = Eba_userbox.(
 
 let%shared connected_user_box user service = Eliom_content.Html.D.(
   let username = Eba_view.username user in
-  div ~a:[a_class ["connected_user_box"]] [
+  div ~a:[a_class ["connected-user-box"]] [
     Eba_view.avatar user;
     div [username;
 	 %%%MODULE_NAME%%%_usermenu.user_menu user service]
@@ -40,7 +40,7 @@ let%shared connection_box () = Eliom_content.Html.D.(
   let%lwt sign_in    = %%%MODULE_NAME%%%_loginpopup.sign_in_button () in
   let%lwt sign_up    = %%%MODULE_NAME%%%_loginpopup.sign_up_button () in
   let%lwt forgot_pwd = %%%MODULE_NAME%%%_loginpopup.forgotpwd_button () in
-  Lwt.return @@ div ~a:[a_class ["eba_login_menu"]] [
+  Lwt.return @@ div ~a:[a_class ["eba-login-menu"]] [
     sign_in;
     sign_up;
     forgot_pwd
