@@ -17,7 +17,7 @@ module type DemoPage = sig
      unit, unit,
      Eliom_service.non_ocaml)
       Eliom_service.t
-  val page : unit -> ([> `Input | `P | `Div] Eliom_content.Html.D.elt) list
+  val page : unit -> ([> `Input | `P | `Div] Eliom_content.Html.D.elt) list Lwt.t
 end
 ]
 
@@ -56,6 +56,7 @@ module PopupPage : DemoPage = struct
                 Lwt.return ()))
              : _)
       ];
+    Lwt.return
     [
       p [pcdata "Here is a button showing a simple popup window when clicked:"];
       p [button]
@@ -108,18 +109,81 @@ module CarouselPage : DemoPage = struct
       ~size
       (List.map (fun n -> [pcdata n]) carousel_pages)
     in
-    [
-      p [pcdata "The carousel displays a number of blocks side-by-side (or vertically stacked)."];
-      p [pcdata "To switch to a different block, either use the buttons above or below the carousel."];
-      p [pcdata "In the mobile app you can also swipe the screen."];
-      ribbon; carousel; p [prev; next]
-    ]
+    Lwt.return
+      [
+	p [pcdata "The carousel displays a number of blocks side-by-side (or vertically stacked)."];
+	p [pcdata "To switch to a different block, either use the buttons above or below the carousel."];
+	p [pcdata "In the mobile app you can also swipe the screen."];
+	ribbon; carousel; p [prev; next]
+      ]
 end
 ]
 
+(* rpc button demo **********************************************************)
+
+let%server demo_function, get_value =
+  let r = ref 0 in
+  (fun () -> Lwt.return @@ incr r),
+  (fun () -> Lwt.return !r)
+	      
+let%client demo_function =
+  let demo_rpc =
+    ~%(Eliom_client.server_function
+	 [%derive.json : unit]
+	 demo_function)
+  in
+  demo_rpc
+
+let%client get_value =
+  ~%(Eliom_client.server_function
+      [%derive.json : unit]
+      (Eba_session.connected_wrapper get_value))
+
+[%%shared
+module RpcPage : DemoPage = struct
+
+  let name = "RPC Button"
+
+  let service =
+    Eliom_service.create
+      ~id:(Eliom_service.Path ["otdemo-rpc"])
+      ~meth:(Eliom_service.Get Eliom_parameter.unit)
+      ()
+
+  let page () =
+    let button =
+      button
+	~a:[a_class ["button"]]
+	[pcdata "Click to call a RPC"]
+    in
+    ignore
+      [%client
+          (Lwt.async (fun () ->
+            Lwt_js_events.clicks
+              (To_dom.of_element ~%button)
+              (fun _ _ ->
+		demo_function ();
+		Eliom_client.change_page ~service:~%service () ()
+	      ))
+             : _)
+      ];
+    let%lwt value = get_value () in
+    Lwt.return
+      [
+	p [pcdata ("Here is a button calling a rpc to increase a server side value: " ^ (string_of_int value))];
+	p [button]
+      ]
+end
+]
+
+
 (* drawer / otdemo welcome page ***********************************************)
 
-let%shared demos = [(module PopupPage : DemoPage); (module CarouselPage)]
+let%shared demos = [
+  (module PopupPage : DemoPage);
+  (module CarouselPage);
+  (module RpcPage)
+]
 
 (* adds a drawer menu to the document body *)
 let%shared make_drawer_menu () =
@@ -137,11 +201,11 @@ let%shared make_drawer_menu () =
 let%shared make_page userid_o content =
   %%%MODULE_NAME%%%_container.page userid_o (
     ignore (make_drawer_menu ());
-    content ()
+    content
   )
 
-let%shared handler userid_o () () = make_page userid_o @@
-  fun () -> [
+let%shared handler userid_o () () = make_page userid_o
+  [
     p [pcdata "This page contains some demos for some widgets \
                from ocsigen-toolkit."];
     p [pcdata "The different demos are accessible through the drawer\
@@ -150,12 +214,19 @@ let%shared handler userid_o () () = make_page userid_o @@
                or redistribute it as you want."];
   ]
 
+
 let%server () =
-  let demo_page content userid_o () () = make_page userid_o content in
-  let registerDemo (module D : DemoPage) =  %%%MODULE_NAME%%%_base.App.register
-    ~service:D.service
-    (%%%MODULE_NAME%%%_page.Opt.connected_page @@ demo_page D.page)
-  in List.iter registerDemo demos;
+  let demo_page userid_o content =
+    make_page userid_o content
+  in
+  let registerDemo (module D : DemoPage) =
+    %%%MODULE_NAME%%%_base.App.register
+      ~service:D.service
+      (%%%MODULE_NAME%%%_page.Opt.connected_page @@ fun id () () ->
+	let%lwt p = D.page () in
+	demo_page id p)
+  in
+  List.iter registerDemo demos;
   %%%MODULE_NAME%%%_base.App.register
     ~service:%%%MODULE_NAME%%%_services.otdemo_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page handler)
