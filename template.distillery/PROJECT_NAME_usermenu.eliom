@@ -18,7 +18,7 @@ let%shared user_menu close user service = Eliom_content.Html.D.(
     hr ();
     Eba_userbox.reset_tips_link close;
     hr ();
-    Eba_view.disconnect_button ();
+    disconnect_button ();
   ]
 )
 
