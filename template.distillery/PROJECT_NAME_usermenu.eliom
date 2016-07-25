@@ -1,4 +1,14 @@
 
+let%shared disconnect_button () = Eliom_content.Html.D.(
+  Form.post_form ~service:Eba_services.disconnect_service
+    (fun _ -> [
+         Form.button_no_value
+           ~a:[ a_class ["button"] ]
+           ~button_type:`Submit
+           [Ot_icons.F.signout (); pcdata "Logout"]
+       ]) ()
+)
+
 let%shared user_menu close user service = Eliom_content.Html.D.(
   [
     p [pcdata "Change your password:"];
