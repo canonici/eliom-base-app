@@ -3,6 +3,13 @@
 
  include Eba_handlers
 
+ let disconnect_handler () () =
+   disconnect_handler () ();
+   Lwt.return @@ ignore
+     [%client 
+	 (Eliom_client.change_page ~service:Eba_services.main_service () ()
+	 : unit Lwt.t)]
+
 ]
 
 [%%client
@@ -54,5 +61,4 @@
 	   (fun () -> disconnect_handler () ()))
     in
     disconnect_rpc ()
-
 ]
