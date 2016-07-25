@@ -26,7 +26,7 @@ let%shared eba_header ?user () = Eliom_content.Html.F.(
 	div ~a:[a_class ["navbar-header"]][
 	  a ~a:[a_class ["navbar-brand"]]
             ~service:Eba_services.main_service [
-	      pcdata %%%MODULE_NAME%%%_base.application_name;
+	      pcdata %%%MODULE_NAME%%%_base.displayed_app_name;
 	    ] ();
 	  user_box
 	];

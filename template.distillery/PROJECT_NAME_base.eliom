@@ -2,6 +2,8 @@ let%server application_name = !%%%MODULE_NAME%%%_config.app_name
 
 let%client application_name = Eliom_client.get_application_name ()
 
+let%shared displayed_app_name = "%%%PROJECT_NAME%%%"
+
 let getenv name default_value =
   try
     Sys.getenv name
