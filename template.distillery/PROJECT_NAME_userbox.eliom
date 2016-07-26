@@ -1,5 +1,5 @@
 
-let msg () = Eba_userbox.(
+let%server msg () = Eba_userbox.(
   let activation_key_created =
     Eliom_reference.Volatile.get Eba_msg.activation_key_created in
   let wrong_password =
@@ -36,6 +36,8 @@ let%shared connected_user_box user service = Eliom_content.Html.D.(
   ]
 )
 
+let%client msg = ~%(Eliom_client.server_function [%derive.json: unit] msg)
+
 let%shared connection_box () = Eliom_content.Html.D.(
   let%lwt sign_in    = %%%MODULE_NAME%%%_loginpopup.sign_in_button () in
   let%lwt sign_up    = %%%MODULE_NAME%%%_loginpopup.sign_up_button () in
@@ -47,7 +49,7 @@ let%shared connection_box () = Eliom_content.Html.D.(
   ]
 )
 
-let%server userbox user service = Eliom_content.Html.F.(
+let%shared userbox user service = Eliom_content.Html.F.(
   let d = div ~a:[a_class ["navbar-right"]] in
   match user with
   | None ->
@@ -64,12 +66,3 @@ let%server userbox user service = Eliom_content.Html.F.(
     Lwt.return @@ d [connected_user_box user service]
 )
 
-let%client userbox user service = Eliom_content.Html.F.(
-  let d = div ~a:[a_class ["navbar-right"]] in
-  match user with
-  | None ->
-    let%lwt cb = connection_box () in
-    Lwt.return @@ d [cb]
-  | Some user ->
-    Lwt.return @@ d [connected_user_box user service]
-)
