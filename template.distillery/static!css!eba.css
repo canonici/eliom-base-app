@@ -211,34 +211,6 @@ form input{
     margin-left: auto;
 }
 
-/* Width relative display */
-.collapse {
-    display: initial;
-}
-@media only screen and (max-width: 1300px){
-    .collapse {
-	display: none;
-    }
-}
-
-.collapsed {
-    display: none;
-}
-@media only screen and (max-width: 1300px){
-    .collapsed {
-	display: initial;
-    }
-}
-
-/* Smartphone */
-@media only screen and (min-device-width : 320px) and (max-device-width: 480px) {
-    body {
-	font-size: 20px;
-    }
-}
-
-
-/**/
 .fa-large {
     color: #ddd;
     font-size: 38px;
