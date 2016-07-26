@@ -12,27 +12,28 @@ let%server msg () = Eba_userbox.(
     Eliom_reference.Volatile.get user_already_preregistered in
   let activation_key_outdated =
     Eliom_reference.Volatile.get activation_key_outdated in
-  if activation_key_created
-  then Some "An email has been sent to this address. Click on the link it contains to log in."
-  else if wrong_password
-  then Some "Wrong password"
-  else if activation_key_outdated
-  then Some "Invalid activation key, ask for a new one."
-  else if user_already_exists
-  then Some "E-mail already exists"
-  else if user_does_not_exist
-  then Some "User does not exist"
-  else if user_already_preregistered
-  then Some "E-mail already preregistered"
-  else None
+  Lwt.return @@
+    if activation_key_created
+    then Some "An email has been sent to this address. Click on the link it contains to log in."
+    else if wrong_password
+    then Some "Wrong password"
+    else if activation_key_outdated
+    then Some "Invalid activation key, ask for a new one."
+    else if user_already_exists
+    then Some "E-mail already exists"
+    else if user_does_not_exist
+    then Some "User does not exist"
+    else if user_already_preregistered
+    then Some "E-mail already preregistered"
+    else None
 )
 
-let%shared connected_user_box user service = Eliom_content.Html.D.(
+let%shared connected_user_box user = Eliom_content.Html.D.(
   let username = Eba_view.username user in
   div ~a:[a_class ["connected-user-box"]] [
     Eba_view.avatar user;
     div [username;
-	 %%%MODULE_NAME%%%_usermenu.user_menu user service]
+	 %%%MODULE_NAME%%%_usermenu.user_menu user]
   ]
 )
 
@@ -53,6 +54,7 @@ let%shared userbox user = Eliom_content.Html.F.(
   let d = div ~a:[a_class ["navbar-right"]] in
   match user with
   | None ->
+    let%lwt msg = msg () in
     begin match msg () with
     | None ->
       let%lwt cb = connection_box () in

@@ -16,7 +16,7 @@ let%shared user_menu close user = Eliom_content.Html.D.(
     hr ();
     Eba_userbox.upload_pic_link
       close
-      %%%MODULE_NAME%%%_services.upload_avatar_service
+      %%%MODULE_NAME%%%_services.upload_user_avatar_service
       (Eba_user.userid_of_user user);
     hr ();
     Eba_userbox.reset_tips_link close;
