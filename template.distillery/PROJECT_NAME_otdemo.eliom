@@ -215,7 +215,7 @@ let%shared handler userid_o () () = make_page userid_o
   ]
 
 
-let%server () =
+let%shared () =
   let demo_page userid_o content =
     make_page userid_o content
   in

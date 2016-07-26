@@ -5,39 +5,6 @@
     open Eliom_content.Html.D
 ]
 
-let%shared main_service_handler userid_o () () =
-  %%%MODULE_NAME%%%_container.page userid_o (
-    [
-      p [em [pcdata "Eliom base app: Put app content here."]]
-    ]
-  )
-
-let%shared about_handler userid_o () () =
-  %%%MODULE_NAME%%%_container.page userid_o [
-    div [
-      p [pcdata "This template provides a skeleton \
-                 for an Ocsigen application."];
-      hr ();
-      p [pcdata "Feel free to modify the generated code and use it \
-                 or redistribute it as you want."]
-    ]
-  ]
-
-let%server upload_user_avatar_handler myid () ((), (cropping, photo)) =
-  let avatar_dir =
-    List.fold_left Filename.concat
-      (List.hd !%%%MODULE_NAME%%%_config.avatar_dir)
-      (List.tl !%%%MODULE_NAME%%%_config.avatar_dir) in
-  let%lwt avatar =
-    Eba_uploader.record_image avatar_dir ~ratio:1. ?cropping photo in
-  let%lwt user = Eba_user.user_of_userid myid in
-  let old_avatar = Eba_user.avatar_of_user user in
-  let%lwt () = Eba_user.update_avatar avatar myid in
-  match old_avatar with
-  | None -> Lwt.return ()
-  | Some old_avatar ->
-    Lwt_unix.unlink (Filename.concat avatar_dir old_avatar )
-
 [%%shared
 let () =
   (* Registering services. Feel free to customize handlers. *)
@@ -75,17 +42,17 @@ let () =
 
   %%%MODULE_NAME%%%_base.App.register
     ~service:Eba_services.main_service
-    (%%%MODULE_NAME%%%_page.Opt.connected_page main_service_handler);
+    (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.main_service_handler);
 
   %%%MODULE_NAME%%%_base.App.register
     ~service:%%%MODULE_NAME%%%_services.about_service
-    (%%%MODULE_NAME%%%_page.Opt.connected_page about_handler) ;
+    (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.about_handler) ;
 ]
 
 let () =
   Eliom_registration.Ocaml.register
     ~service:%%%MODULE_NAME%%%_services.upload_user_avatar_service
-    (Eba_session.connected_fun upload_user_avatar_handler)
+    (Eba_session.connected_fun %%%MODULE_NAME%%%_handlers.upload_user_avatar_handler)
 
 
 (* Print more debugging information when <debugmode/> is in config file
