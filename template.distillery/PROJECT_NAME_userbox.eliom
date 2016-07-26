@@ -55,7 +55,7 @@ let%shared userbox user = Eliom_content.Html.F.(
   match user with
   | None ->
     let%lwt msg = msg () in
-    begin match msg () with
+    begin match msg with
     | None ->
       let%lwt cb = connection_box () in
       Lwt.return @@ d [cb]
