@@ -49,7 +49,7 @@ let%shared connection_box () = Eliom_content.Html.D.(
   ]
 )
 
-let%shared userbox user service = Eliom_content.Html.F.(
+let%shared userbox user = Eliom_content.Html.F.(
   let d = div ~a:[a_class ["navbar-right"]] in
   match user with
   | None ->
@@ -63,6 +63,6 @@ let%shared userbox user service = Eliom_content.Html.F.(
       Lwt.return @@ d [msg; cb]
     end 
   | Some user ->
-    Lwt.return @@ d [connected_user_box user service]
+    Lwt.return @@ d [connected_user_box user]
 )
 

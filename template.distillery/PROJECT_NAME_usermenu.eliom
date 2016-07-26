@@ -9,12 +9,15 @@ let%shared disconnect_button () = Eliom_content.Html.D.(
        ]) ()
 )
 
-let%shared user_menu close user service = Eliom_content.Html.D.(
+let%shared user_menu close user = Eliom_content.Html.D.(
   [
     p [pcdata "Change your password:"];
     Eba_view.password_form ~service:Eba_services.set_password_service' ();
     hr ();
-    Eba_userbox.upload_pic_link close service (Eba_user.userid_of_user user);
+    Eba_userbox.upload_pic_link
+      close
+      %%%MODULE_NAME%%%_services.upload_avatar_service
+      (Eba_user.userid_of_user user);
     hr ();
     Eba_userbox.reset_tips_link close;
     hr ();
@@ -22,7 +25,7 @@ let%shared user_menu close user service = Eliom_content.Html.D.(
   ]
 )
 
-let%shared user_menu user service = Eliom_content.Html.D.(
+let%shared user_menu user = Eliom_content.Html.D.(
   let but = div ~a:[a_class ["btn";"eba-usermenu-button"]]
     [pcdata "Menu"]
   in
@@ -34,6 +37,6 @@ let%shared user_menu user service = Eliom_content.Html.D.(
            let o = Ow_button.to_button_dyn_alert ~%but in
            o##unpress
          in
-         Lwt.return (user_menu close ~%user ~%service): 'a -> 'b)]);
+         Lwt.return (user_menu close ~%user): 'a -> 'b)]);
   div ~a:[a_class ["eba-usermenu"]] [but; menu]
 )
