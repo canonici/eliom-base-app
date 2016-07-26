@@ -18,7 +18,7 @@ let%shared navigation_bar =
 let%shared eba_header ?user () = Eliom_content.Html.F.(
   ignore user;
   let%lwt user_box = 
-    %%%MODULE_NAME%%%_userbox.userbox user %%%MODULE_NAME%%%_services.upload_user_avatar_service in
+    %%%MODULE_NAME%%%_userbox.userbox user in
   let%lwt navigation_bar = navigation_bar () in
   Lwt.return (
     nav ~a:[a_class ["navbar";"navbar-inverse";"navbar-relative-top"]] [

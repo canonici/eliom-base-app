@@ -93,7 +93,7 @@
     div [
       p [pcdata "This template provides a skeleton \
                  for an Ocsigen application."];
-      hr ();
+      br ();
       p [pcdata "Feel free to modify the generated code and use it \
                  or redistribute it as you want."]
     ]
