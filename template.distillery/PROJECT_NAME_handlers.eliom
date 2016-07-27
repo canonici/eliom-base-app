@@ -25,14 +25,12 @@
    | Some old_avatar ->
      Lwt_unix.unlink (Filename.concat avatar_dir old_avatar )
 
+ let forgot_password_handler =
+   forgot_password_handler Eba_services.main_service
+
 ]
 
 [%%client
- type service = 
-   (unit, unit, Eliom_service.get, Eliom_service.att,
-    Eliom_service.non_co, Eliom_service.non_ext, Eliom_service.reg,
-    [ `WithoutSuffix ], unit, unit, Eliom_service.non_ocaml)
-     Eliom_service.t
 
   let set_personal_data_handler' =
     let set_personal_data_rpc =
@@ -52,9 +50,9 @@
 	   [%derive.json : string]
 	   (Eba_session.Opt.connected_rpc
 	      (fun _ mail ->
-		forgot_password_handler Eba_services.main_service () mail)))
+		forgot_password_handler () mail)))
     in
-    fun (_ : service) () mail -> forgot_password_rpc mail
+    fun () mail -> forgot_password_rpc mail
 
   let preregister_handler' =
     let preregister_rpc =
