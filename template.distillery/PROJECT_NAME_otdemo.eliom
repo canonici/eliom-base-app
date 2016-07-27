@@ -23,16 +23,17 @@ end
 
 (* popup button demo **********************************************************)
 
+let%server service = Eliom_service.create
+  ~id:(Eliom_service.Path ["otdemo-popup"])
+  ~meth:(Eliom_service.Get Eliom_parameter.unit)
+  ()
+
 [%%shared
 module PopupPage : DemoPage = struct
 
   let name = "Popup Button"
 
-  let service =
-    Eliom_service.create
-      ~id:(Eliom_service.Path ["otdemo-popup"])
-      ~meth:(Eliom_service.Get Eliom_parameter.unit)
-      ()
+  let service = ~%service
 
   let page () =
     let button =
@@ -68,16 +69,17 @@ end
 
 let%client (carousel_update, carousel_change) = React.E.create ()
 
+let%server service = Eliom_service.create
+  ~id:(Eliom_service.Path ["otdemo-carousel"])
+  ~meth:(Eliom_service.Get Eliom_parameter.unit)
+  ()
+
 [%%shared
 module CarouselPage : DemoPage = struct
 
   let name = "Carousel"
 
-  let service =
-    Eliom_service.create
-      ~id:(Eliom_service.Path ["otdemo-carousel"])
-      ~meth:(Eliom_service.Get Eliom_parameter.unit)
-      ()
+  let service = ~%service
 
   let page () =
     let make_page content =
@@ -139,16 +141,17 @@ let%client get_value =
       [%derive.json : unit]
       (Eba_session.connected_wrapper get_value))
 
+let%server service = Eliom_service.create
+  ~id:(Eliom_service.Path ["otdemo-rpc"])
+  ~meth:(Eliom_service.Get Eliom_parameter.unit)
+  ()
+
 [%%shared
 module RpcPage : DemoPage = struct
 
   let name = "RPC Button"
 
-  let service =
-    Eliom_service.create
-      ~id:(Eliom_service.Path ["otdemo-rpc"])
-      ~meth:(Eliom_service.Get Eliom_parameter.unit)
-      ()
+  let service = ~%service
 
   let page () =
     let button =
@@ -214,15 +217,12 @@ let%shared handler userid_o () () = make_page userid_o
 
 
 let%shared () =
-  let demo_page userid_o content =
-    make_page userid_o content
-  in
   let registerDemo (module D : DemoPage) =
     %%%MODULE_NAME%%%_base.App.register
       ~service:D.service
       (%%%MODULE_NAME%%%_page.Opt.connected_page @@ fun id () () ->
 	let%lwt p = D.page () in
-	demo_page id p)
+	make_page id p)
   in
   List.iter registerDemo demos;
   %%%MODULE_NAME%%%_base.App.register
