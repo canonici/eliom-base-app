@@ -111,7 +111,7 @@
      fun user ->
        Eliom_content.Html.D.(
 	 [
-	   div ~a:[a_class ["eba-login-menu";"eba-welcome-box"]] [
+	   div ~a:[a_class ["eba-welcome-box"]] [
 	     p [pcdata "Change your password:"];
 	     Eba_view.password_form ~service:Eba_services.set_password_service' ();
 	     br ();
