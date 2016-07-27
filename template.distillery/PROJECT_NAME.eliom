@@ -49,7 +49,7 @@ let () =
     (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.about_handler);
 
   %%%MODULE_NAME%%%_base.App.register
-    ~service:Settings_services.settings_service
+    ~service:%%%MODULE_NAME%%%_services.settings_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.settings_handler);
 
 ]
