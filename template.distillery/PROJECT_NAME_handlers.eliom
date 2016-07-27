@@ -25,14 +25,12 @@
    | Some old_avatar ->
      Lwt_unix.unlink (Filename.concat avatar_dir old_avatar )
 
+ let forgot_password_handler =
+   forgot_password_handler Eba_services.main_service
+
 ]
 
 [%%client
- type service = 
-   (unit, unit, Eliom_service.get, Eliom_service.att,
-    Eliom_service.non_co, Eliom_service.non_ext, Eliom_service.reg,
-    [ `WithoutSuffix ], unit, unit, Eliom_service.non_ocaml)
-     Eliom_service.t
 
   let set_personal_data_handler' =
     let set_personal_data_rpc =
@@ -52,9 +50,9 @@
 	   [%derive.json : string]
 	   (Eba_session.Opt.connected_rpc
 	      (fun _ mail ->
-		forgot_password_handler Eba_services.main_service () mail)))
+		forgot_password_handler () mail)))
     in
-    fun (_ : service) () mail -> forgot_password_rpc mail
+    fun () mail -> forgot_password_rpc mail
 
   let preregister_handler' =
     let preregister_rpc =
@@ -82,6 +80,55 @@
     in
     fun () () -> disconnect_rpc ()
 ]
+
+let%shared password_form ~service () = Eliom_content.Html.D.(
+  Form.post_form
+    ~service
+    (fun (pwdn, pwd2n) ->
+       let pass1 =
+         Form.input
+           ~a:[a_required ();
+               a_autocomplete false;
+	       a_placeholder "password"]
+           ~input_type:`Password
+	   ~name:pwdn
+           Form.string
+       in
+       let pass2 =
+         Form.input
+           ~a:[a_required ();
+               a_autocomplete false;
+	       a_placeholder "retype your password"]
+           ~input_type:`Password
+	   ~name:pwd2n
+           Form.string
+       in
+       ignore [%client (
+         let pass1 = Eliom_content.Html.To_dom.of_input ~%pass1 in
+         let pass2 = Eliom_content.Html.To_dom.of_input ~%pass2 in
+         Lwt_js_events.async
+           (fun () ->
+              Lwt_js_events.inputs pass2
+                (fun _ _ ->
+                   ignore (
+		     if Js.to_string pass1##.value <> Js.to_string pass2##.value
+                     then
+		       (Js.Unsafe.coerce pass2)##(setCustomValidity ("Passwords do not match"))
+                     else (Js.Unsafe.coerce pass2)##(setCustomValidity ("")));
+                  Lwt.return ()))
+	   : unit)];
+       [
+         table
+           [
+             tr [td [pass1]];
+             tr [td [pass2]];
+           ];
+         Form.input ~input_type:`Submit
+           ~a:[ a_class [ "button" ] ] ~value:"Send" Form.string
+       ])
+    ()
+)
+
 
 [%%shared
 
@@ -113,7 +160,7 @@
 	 [
 	   div ~a:[a_class ["eba-welcome-box"]] [
 	     p [pcdata "Change your password:"];
-	     Eba_view.password_form ~service:Eba_services.set_password_service' ();
+	     password_form ~service:Eba_services.set_password_service' ();
 	     br ();
 	     Eba_userbox.upload_pic_link
 	       none

@@ -1,30 +1,9 @@
 
-let%client generic_email_form = Eba_view.generic_email_form
-
-let%server generic_email_form ~service () = Eliom_content.Html.D.(
-  Form.post_form ~service ~xhr:false
-      (fun name ->
-	[
-          Form.input
-            ~a:[a_placeholder "e-mail address"]
-            ~input_type:`Email
-            ~name
-            Form.string;
-	  hr ();
-          Form.input
-            ~a:[a_class ["button"]]
-            ~input_type:`Submit
-            ~value:"Send"
-            Form.string;
-	]
-      ) ()
-)
-
 let%shared sign_up_form () =
-  generic_email_form ~service:Eba_services.sign_up_service' ()
+  Eba_view.generic_email_form ~service:Eba_services.sign_up_service' ()
 
 let%shared forgot_password_form () =
-  generic_email_form ~service:Eba_services.forgot_password_service ()
+  Eba_view.generic_email_form ~service:Eba_services.forgot_password_service ()
 
 let%shared forgotpwd_button () = Eliom_content.Html.D.(
   let popup_content = fun () -> Lwt.return @@

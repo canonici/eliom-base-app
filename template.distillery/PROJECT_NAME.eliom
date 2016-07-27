@@ -18,7 +18,7 @@ let () =
 
   Eliom_registration.Action.register
     ~service:Eba_services.forgot_password_service
-    (%%%MODULE_NAME%%%_handlers.forgot_password_handler Eba_services.main_service);
+    %%%MODULE_NAME%%%_handlers.forgot_password_handler;
 
   Eliom_registration.Action.register
     ~service:Eba_services.preregister_service'
