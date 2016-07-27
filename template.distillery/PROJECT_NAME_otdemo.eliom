@@ -194,14 +194,12 @@ let%shared make_drawer_menu () =
     let menu = ul (List.map make_link demos) in
     [div ~a:[a_class ["eba-drawer"]] [h3 [pcdata "otdemo: drawer menu"]; menu]]
   in
-  let (drawer, open_drawer, close_drawer) = Ot_drawer.drawer menu in
-  ignore [%client (Eliom_content.Html.Manip.appendToBody ~%drawer : _)];
-  (open_drawer, close_drawer)
+  let drawer, _,_ = Ot_drawer.drawer menu in
+  drawer
 
 let%shared make_page userid_o content =
   %%%MODULE_NAME%%%_container.page userid_o (
-    ignore (make_drawer_menu ());
-    content
+    make_drawer_menu () :: content
   )
 
 let%shared handler userid_o () () = make_page userid_o

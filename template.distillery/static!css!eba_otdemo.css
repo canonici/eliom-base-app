@@ -2,6 +2,10 @@
   background-color: #222;
   color: white;
   overflow: hidden;
+  text-align: left;
+}
+.eba-drawer ul {
+    list-style-type: none;
 }
 .eba-drawer a {
   color: white;
