@@ -25,6 +25,6 @@ let%shared settings_button () = Eliom_content.Html.D.(
 	   )
              : _)
       ];
-    button
+    div [button]
 )
 
