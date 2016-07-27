@@ -79,6 +79,15 @@ form input{
     height: auto;
     width: auto;
 }
+.connected-user-box .button {
+    border: solid 1px;
+    border-radius: 10px;
+    border-width: 2px;
+    color: white;
+    background-color: transparent;
+    font-size: 100%;
+    margin-left: 10px;
+}
 
 .eba_username {
     margin-left: 20px;

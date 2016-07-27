@@ -28,20 +28,25 @@
 ]
 
 [%%client
+ type service = 
+   (unit, unit, Eliom_service.get, Eliom_service.att,
+    Eliom_service.non_co, Eliom_service.non_ext, Eliom_service.reg,
+    [ `WithoutSuffix ], unit, unit, Eliom_service.non_ocaml)
+     Eliom_service.t
 
-  let set_personal_data_handler' id () d =
+  let set_personal_data_handler' =
     let set_personal_data_rpc =
       ~%(Eliom_client.server_function
 	   [%derive.json : ((string * string) * (string * string))]
 	   (Eba_session.connected_rpc
 	      (fun id s -> set_personal_data_handler' id () s)))
     in
-    set_personal_data_rpc d
+    fun (_ : int64) () d -> set_personal_data_rpc d
 
   let set_password_handler' id () p =
     Eba_handlers.set_password_rpc p
 
-  let forgot_password_handler _ () mail =
+  let forgot_password_handler =
     let forgot_password_rpc =
       ~%(Eliom_client.server_function
 	   [%derive.json : string]
@@ -49,33 +54,33 @@
 	      (fun _ mail ->
 		forgot_password_handler Eba_services.main_service () mail)))
     in
-    forgot_password_rpc mail
+    fun (_ : service) () mail -> forgot_password_rpc mail
 
-  let preregister_handler' () mail =
+  let preregister_handler' =
     let preregister_rpc =
       ~%(Eliom_client.server_function
 	   [%derive.json : string]
 	   (Eba_session.Opt.connected_rpc
 	      (fun _ mail -> preregister_handler' () mail)))
     in
-    preregister_rpc mail
+    fun () mail -> preregister_rpc mail
      
-  let activation_handler akey () =
+  let activation_handler =
     let activation_handler_rpc =
       ~%(Eliom_client.server_function
 	   [%derive.json : string]
 	   (Eba_session.Opt.connected_rpc
 	      (fun _ akey -> activation_handler akey ())))
     in
-    activation_handler_rpc akey
+    fun akey () -> activation_handler_rpc akey
   
-  let disconnect_handler () () =
+  let disconnect_handler =
     let disconnect_rpc =
       ~%(Eliom_client.server_function
 	   [%derive.json: unit]
 	   (fun () -> disconnect_handler () ()))
     in
-    disconnect_rpc ()
+    fun () () -> disconnect_rpc ()
 ]
 
 [%%shared
@@ -99,5 +104,34 @@
     ]
   ]
  )
+
+ let settings_handler =
+   let settings_content =
+     let none = [%client ((fun () -> ()) : unit -> unit)] in
+     fun user ->
+       Eliom_content.Html.D.(
+	 [
+	   div ~a:[a_class ["eba-login-menu";"eba-welcome-box"]] [
+	     p [pcdata "Change your password:"];
+	     Eba_view.password_form ~service:Eba_services.set_password_service' ();
+	     br ();
+	     Eba_userbox.upload_pic_link
+	       none
+	       %%%MODULE_NAME%%%_services.upload_user_avatar_service
+	       (Eba_user.userid_of_user user);
+	     br ();
+	     Eba_userbox.reset_tips_link none;
+	   ]
+	 ]
+       )
+   in
+   fun userid_o () () ->
+     let%lwt user = %%%MODULE_NAME%%%_container.get_user_data userid_o in
+     let content = match user with
+       | Some user ->
+	 settings_content user
+       | None -> []
+     in
+     %%%MODULE_NAME%%%_container.page userid_o content
 
 ]

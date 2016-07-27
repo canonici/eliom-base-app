@@ -32,8 +32,11 @@ let%shared connected_user_box user = Eliom_content.Html.D.(
   let username = Eba_view.username user in
   div ~a:[a_class ["connected-user-box"]] [
     Eba_view.avatar user;
-    div [username;
-	 %%%MODULE_NAME%%%_usermenu.user_menu user]
+    div [
+      username
+    ];
+    %%%MODULE_NAME%%%_usermenu.settings_button ();
+    %%%MODULE_NAME%%%_usermenu.disconnect_button ();
   ]
 )
 
@@ -55,7 +58,7 @@ let%shared userbox user = Eliom_content.Html.F.(
   match user with
   | None ->
     let%lwt msg = msg () in
-    begin match msg () with
+    begin match msg with
     | None ->
       let%lwt cb = connection_box () in
       Lwt.return @@ d [cb]
