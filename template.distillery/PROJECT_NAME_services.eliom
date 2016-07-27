@@ -19,6 +19,11 @@ let otdemo_service =
     ~id:(Eliom_service.Path ["otdemo"])
     ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
+
+let settings_service = Eliom_service.create
+  ~id:(Eliom_service.Path ["settings"])
+  ~meth:(Eliom_service.Get Eliom_parameter.unit)
+  ()
 ]
 
 [%%client
@@ -31,4 +36,7 @@ let otdemo_service =
 
  let otdemo_service =
    ~%otdemo_service
+
+ let settings_service =
+   ~%settings_service
 ]

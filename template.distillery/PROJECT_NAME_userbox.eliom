@@ -32,8 +32,11 @@ let%shared connected_user_box user = Eliom_content.Html.D.(
   let username = Eba_view.username user in
   div ~a:[a_class ["connected-user-box"]] [
     Eba_view.avatar user;
-    div [username;
-	 %%%MODULE_NAME%%%_usermenu.user_menu user]
+    div [
+      username
+    ];
+    %%%MODULE_NAME%%%_usermenu.settings_button ();
+    %%%MODULE_NAME%%%_usermenu.disconnect_button ();
   ]
 )
 
