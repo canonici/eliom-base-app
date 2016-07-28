@@ -91,6 +91,7 @@ module CarouselPage : DemoPage = struct
       ~update:[%client carousel_update]
       (List.map make_page carousel_pages)
     in
+    let length = List.length carousel_pages in
     let prev = Ot_carousel.previous
       ~a:[a_class ["button"]]
       ~change:[%client carousel_change]
@@ -101,7 +102,7 @@ module CarouselPage : DemoPage = struct
       ~a:[a_class ["button"]]
       ~change:[%client carousel_change]
       ~pos
-      ~length:(List.length carousel_pages)
+      ~length
       ~size
       [pcdata "→"]
     in
@@ -111,12 +112,19 @@ module CarouselPage : DemoPage = struct
       ~size
       (List.map (fun n -> [pcdata n]) carousel_pages)
     in
+    let bullets = Ot_carousel.bullets
+      ~change:[%client carousel_change]
+      ~pos
+      ~length
+      ()
+    in
     Lwt.return
       [
 	p [pcdata "The carousel displays a number of blocks side-by-side (or vertically stacked)."];
 	p [pcdata "To switch to a different block, either use the buttons above or below the carousel."];
 	p [pcdata "In the mobile app you can also swipe the screen."];
-	ribbon; carousel; p [prev; next]
+	ribbon; carousel; p [prev; next];
+	div ~a:[a_class ["otdemo-bullets"]] [bullets]
       ]
 end
 ]

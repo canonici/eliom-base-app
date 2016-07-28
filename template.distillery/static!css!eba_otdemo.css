@@ -30,6 +30,11 @@ div.otdemo-carousel-page {
   background-color: #222;
   color: white;
 }
+.otdemo-bullets {
+    margin: auto;
+    width: 100px;
+    list-type-style: circle;
+}
 
 button.dr-toggle-button {
   border: 0;
