@@ -250,6 +250,15 @@ form input{
     text-align: center;
 }
 
+/* Carousel */
+.carousel > .car2 {
+    height: auto;
+    width: auto;
+}
+.carousel > .car2 .carpage {
+    height: unset;
+}
+
 /* Smartphone */
 @media only screen and (min-device-width : 320px) and (max-device-width: 500px) {
     body {
