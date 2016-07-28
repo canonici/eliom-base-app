@@ -83,9 +83,9 @@ form input{
     width: auto;
     display: flex;
 }
-.connected-user-box i {
-    height: auto;
-    width: auto;
+.connected-user-box img {
+    height: 30px;
+    width: 30px;
 }
 .connected-user-box .button {
     border: solid 1px;
