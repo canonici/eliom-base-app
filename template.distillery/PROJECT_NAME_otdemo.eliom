@@ -179,13 +179,63 @@ module RpcPage : DemoPage = struct
 end
 ]
 
+(* calendar demo **********************************************************)
+
+let%server service = Eliom_service.create
+  ~id:(Eliom_service.Path ["otdemo-calendar"])
+  ~meth:(Eliom_service.Get Eliom_parameter.unit)
+  ()
+
+let%server s, f = Eliom_shared.React.S.create None
+
+let%client action y m d = ~%f (Some (y, m, d)); Lwt.return ()
+
+let%shared string_of_date = function
+  | Some (y, m, d) ->
+    Printf.sprintf "You clicked on %d %d %d" y m d
+  | None ->
+    ""
+
+let%server date_as_string () : string Eliom_shared.React.S.t =
+  Eliom_shared.React.S.map [%shared string_of_date] s
+
+let%server date_reactive () = Eliom_content.Html.R.(
+  Lwt.return @@
+    date_as_string ()
+)
+let%client date_reactive =
+  ~%(Eliom_client.server_function [%derive.json: unit] date_reactive)
+
+[%%shared
+module CalendarPage : DemoPage = struct
+
+  let name = "Calendar"
+
+  let service = ~%service
+
+  let page () =
+    let calendar = Ot_calendar.make
+      ~click_non_highlighted:true
+      ~action:[%client action]
+      ()
+    in
+    let%lwt dr = date_reactive () in
+    Lwt.return
+      [
+	p [pcdata "This page shows the calendar."];
+	div ~a:[a_class ["eba-calendar"]] [calendar];
+	p [Eliom_content.Html.R.pcdata dr]
+      ]
+end
+]
 
 (* drawer / otdemo welcome page ***********************************************)
 
 let%shared demos = [
   (module PopupPage : DemoPage);
   (module CarouselPage);
-  (module RpcPage)
+  (module RpcPage);
+  (module CalendarPage)
 ]
 
 (* adds a drawer menu to the document body *)
