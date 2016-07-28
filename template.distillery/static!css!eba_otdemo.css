@@ -33,7 +33,9 @@ div.otdemo-carousel-page {
 .otdemo-bullets {
     margin: auto;
     width: 100px;
-    list-type-style: circle;
+}
+.otdemo-bullets .bullet-nav {
+    list-style-type: circle;
 }
 
 button.dr-toggle-button {
