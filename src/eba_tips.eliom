@@ -96,7 +96,9 @@ let%client get_tips_seen =
     ~%(Eliom_client.server_function [%derive.json: unit] 
 	 (Eba_session.connected_rpc get_tips_seen))
   in
-  fun (_:int64) () -> rpc ()
+  fun (_:int64) () ->
+    Printf.printf "GET TIPS\n%!";
+    rpc ()
 
 let%server set_tip_seen userid name = Tips_data.add userid [name]
 
@@ -105,7 +107,9 @@ let%client set_tip_seen =
     ~%(Eliom_client.server_function [%derive.json : string]
 	 (Eba_session.connected_rpc set_tip_seen))
   in
-  fun (_:int64) name -> rpc name
+  fun (_:int64) name ->
+    Printf.printf "SET TIPS\n%!";
+    rpc name
 
 
 (* I want to see the tips again *)
@@ -146,8 +150,10 @@ let%shared block ?(a = []) ~name ~content () =
   let myid_o = Eba_current_user.Opt.get_current_userid () in
   match myid_o with
   | None ->
+    Printf.printf "NO ID\n%!";
     Lwt.return None
   | Some myid ->
+    Printf.printf "ID\n%!";
     let%lwt seen = get_tips_seen myid () in
     if List.mem name seen
     then Lwt.return None
@@ -260,8 +266,10 @@ let%shared bubble ?a ?arrow ?top ?left ?right ?bottom ?height ?width
   let myid_o = Eba_current_user.Opt.get_current_userid () in
   match myid_o with
   | None ->
+    Printf.printf "NO ID\n%!";
     Lwt.return ()
   | Some myid ->
+    Printf.printf "ID\n%!";
     let%lwt seen = get_tips_seen myid () in
     if List.mem name seen
     then Lwt.return ()
