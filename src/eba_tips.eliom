@@ -77,6 +77,7 @@ end
 module Tips_data = Make (struct
   type key = int64
   type data = string list
+  [@@deriving json]
   let table_name = "tips_data"
   let string_of_key = Int64.to_string
   let add_data old_data new_data = old_data @ new_data
