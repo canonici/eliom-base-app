@@ -157,9 +157,8 @@ let%shared block ?(a = []) ~name ~content () =
     let%lwt seen = get_tips_seen myid () in
     if List.mem name seen
     then (Printf.printf "TIPS SEEN\n%!";Lwt.return None)
-    else
+    else begin
       Printf.printf "TIPS NOT SEEN\n%!";
-      begin
       let close_button = Ot_icons.D.close () in
       let box =
         Eliom_content.Html.D.div
@@ -278,7 +277,7 @@ let%shared bubble ?a ?arrow ?top ?left ?right ?bottom ?height ?width
       Printf.printf "TIPS SEEN\n%!";
       Lwt.return ()
     )
-    else
+    else begin
       Printf.printf "TIPS NOT SEEN\n%!";
       let _ = [%client ( Lwt.async (fun () ->
               display_bubble ?a:~%a ?arrow:~%arrow
@@ -291,3 +290,4 @@ let%shared bubble ?a ?arrow ?top ?left ?right ?bottom ?height ?width
                             : unit)]
       in
       Lwt.return ()
+    end
