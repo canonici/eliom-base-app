@@ -102,8 +102,8 @@ module CarouselPage : DemoPage = struct
 	~change:[%client carousel_change]
 	~carousel:([a_class ["otdemo-carousel"]], carousel_content)
 	~ribbon:([], ribbon_content)
-	~previous:([a_class ["button"]],[pcdata "←"])
-	~next:([a_class ["button"]],[pcdata "→"])
+	~previous:([a_class ["button"]], [pcdata "←"])
+	~next:([a_class ["button"]], [pcdata "→"])
 	~bullets:([], bullets_content)
 	()
     in
