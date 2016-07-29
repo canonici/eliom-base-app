@@ -86,37 +86,26 @@ module CarouselPage : DemoPage = struct
       div ~a:[a_class ["otdemo-carousel-page"]] [pcdata content]
     in
     let carousel_pages = ["1"; "2"; "3"] in
-    let carousel, pos, size, _ = Ot_carousel.make
-      ~a:[a_class ["otdemo-carousel"]]
-      ~update:[%client carousel_update]
-      (List.map make_page carousel_pages)
+    let ribbon_content = List.map (fun p -> [pcdata p]) carousel_pages in
+    let carousel_content = List.map make_page carousel_pages in
+    let bullets_content =
+      List.map (fun n -> [div [p [pcdata n]]]) carousel_pages
     in
-    let length = List.length carousel_pages in
-    let prev = Ot_carousel.previous
-      ~a:[a_class ["button"]]
-      ~change:[%client carousel_change]
-      ~pos
-      [pcdata "←"]
-    in
-    let next = Ot_carousel.next
-      ~a:[a_class ["button"]]
-      ~change:[%client carousel_change]
-      ~pos
-      ~length
-      ~size
-      [pcdata "→"]
-    in
-    let ribbon = Ot_carousel.ribbon
-      ~change:[%client carousel_change]
-      ~pos
-      ~size
-      (List.map (fun n -> [pcdata n]) carousel_pages)
-    in
-    let bullets = Ot_carousel.bullets
-      ~change:[%client carousel_change]
-      ~pos
-      ~length
-      ()
+    let carousel,
+      Some ribbon,
+      Some prev,
+      Some next,
+      Some bullets
+      =
+      Eba_tools.Carousel.make
+	~update:[%client carousel_update]
+	~change:[%client carousel_change]
+	~carousel:([a_class ["otdemo-carousel"]], carousel_content)
+	~ribbon:([], ribbon_content)
+	~previous:([a_class ["button"]], [pcdata "←"])
+	~next:([a_class ["button"]], [pcdata "→"])
+	~bullets:([], bullets_content)
+	()
     in
     Lwt.return
       [
