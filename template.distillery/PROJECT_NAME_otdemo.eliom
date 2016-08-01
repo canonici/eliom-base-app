@@ -304,7 +304,7 @@ let%shared demos = [
   (module PopupPage : DemoPage);
   (module CarouselPage);
   (module RpcPage);
-  (module CalendarPage)
+  (module CalendarPage);
   (module TimepickerPage)
 ]
 
