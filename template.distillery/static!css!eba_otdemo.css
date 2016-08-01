@@ -1,3 +1,5 @@
+
+/* drawer */
 .eba-drawer {
   background-color: #222;
   color: white;
@@ -17,6 +19,7 @@
   background-color: #ddeeff;
 }
 
+/* Carousel */
 div.otdemo-carousel {
   width: 4cm;
   margin: auto;
@@ -35,6 +38,12 @@ div.otdemo-carousel-page {
     width: 100px;
 }
 
+/*time picker*/
+.ot-tp-container {
+    margin: auto !important;
+}
+
+
 
 button.dr-toggle-button {
   border: 0;
@@ -47,6 +56,8 @@ button.dr-toggle-button::before {
   content: '\f013';
 }
 
+
+/* popup */
 div.ot-popup {
   background-color: #222;
   padding: 7mm;

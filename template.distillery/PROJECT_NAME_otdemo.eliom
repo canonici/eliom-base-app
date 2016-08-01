@@ -238,6 +238,66 @@ module CalendarPage : DemoPage = struct
 end
 ]
 
+(* timepicker demo ************************************************************)
+
+let%server service = Eliom_service.create
+  ~id:(Eliom_service.Path ["otdemo-timepicker"])
+  ~meth:(Eliom_service.Get Eliom_parameter.unit)
+  ()
+
+let%server s, f = Eliom_shared.React.S.create None
+
+let%client action (h, m) = ~%f (Some (h, m)); Lwt.return ()
+
+let%shared string_of_time = function
+  | Some (h, m) ->
+    Printf.sprintf "You clicked on %d:%d" h m
+  | None ->
+    ""
+
+let%server time_as_string () : string Eliom_shared.React.S.t =
+  Eliom_shared.React.S.map [%shared string_of_time] s
+
+let%server time_reactive () = Lwt.return @@ time_as_string ()
+
+let%client time_reactive =
+  ~%(Eliom_client.server_function [%derive.json: unit] time_reactive)
+
+[%%shared
+module TimepickerPage : DemoPage = struct
+
+  let name = "TimePicker"
+
+  let service = ~%service
+
+  let page () =
+    let time_picker, _, back_f = Ot_time_picker.make
+      ~h24:true
+      ~action:[%client action]
+      ()
+    in
+    let button = Eliom_content.Html.D.button [pcdata "back to hours"] in
+    ignore
+      [%client
+          (Lwt.async (fun () ->
+            Lwt_js_events.clicks
+              (To_dom.of_element ~%button)
+              (fun _ _ ->
+                ~%back_f ();
+                Lwt.return ()))
+             : _)
+      ];
+    let%lwt tr = time_reactive () in
+    Lwt.return
+      [
+	p [pcdata "This page shows the time picker."];
+	div [time_picker];
+	p [Eliom_content.Html.R.pcdata tr];
+	div [button]
+      ]
+end
+]
+
 (* drawer / otdemo welcome page ***********************************************)
 
 let%shared demos = [
@@ -245,6 +305,7 @@ let%shared demos = [
   (module CarouselPage);
   (module RpcPage);
   (module CalendarPage)
+  (module TimepickerPage)
 ]
 
 (* adds a drawer menu to the document body *)
