@@ -2,32 +2,13 @@
 [%%shared
  module Navigation_bar : sig
 
-   type service =
-     ('get, unit, Eliom_service.get, _, _, _, _,
-      _, _, unit, Eliom_service.non_ocaml) Eliom_service.t 
-
-   type elt = string * service
-
    val ul_of_elts :
-     ?ul_class:string list -> elt list -> [>`Ul] Eliom_content.Html.F.elt Lwt.t
+     ?ul_class:string list ->
+     (string * ('get, unit, Eliom_service.get, _, _, _, _,
+		_, _, unit, Eliom_service.non_ocaml) Eliom_service.t) list -> 
+     [>`Ul] Eliom_content.Html.F.elt Lwt.t
 
  end = struct
-
-   type service = (
-     unit,
-     unit,
-     Eliom_service.get,
-     Eliom_service.att,
-     Eliom_service.non_co,
-     Eliom_service.non_ext,
-     Eliom_service.reg,
-     [ `WithoutSuffix ],
-     unit,
-     unit,
-     Eliom_service.non_ocaml
-   ) Eliom_service.t
-
-   type elt = string * service
 
    let li_of_elt elt = Eliom_content.Html.F.(
      let text, service = elt in
