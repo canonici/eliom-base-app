@@ -4,7 +4,7 @@
 
    val ul_of_elts :
      ?ul_class:string list ->
-     (string * ('get, unit, Eliom_service.get, _, _, _, _,
+     (string * (unit, unit, Eliom_service.get, _, _, _, _,
 		_, _, unit, Eliom_service.non_ocaml) Eliom_service.t) list -> 
      [>`Ul] Eliom_content.Html.F.elt Lwt.t
 
