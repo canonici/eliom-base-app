@@ -91,21 +91,19 @@ module CarouselPage : DemoPage = struct
     let bullets_content =
       List.map (fun n -> [div [p [pcdata n]]]) carousel_pages
     in
-    let carousel,
-      Some ribbon,
-      Some prev,
-      Some next,
-      Some bullets
-      =
-      Eba_tools.Carousel.make
-	~update:[%client carousel_update]
-	~change:[%client carousel_change]
-	~carousel:([a_class ["otdemo-carousel"]], carousel_content)
-	~ribbon:([], ribbon_content)
-	~previous:([a_class ["button"]], [pcdata "←"])
-	~next:([a_class ["button"]], [pcdata "→"])
-	~bullets:([], bullets_content)
-	()
+    let r = Eba_tools.Carousel.make
+      ~update:[%client carousel_update]
+      ~change:[%client carousel_change]
+      ~carousel:([a_class ["otdemo-carousel"]], carousel_content)
+      ~ribbon:([], ribbon_content)
+      ~previous:([a_class ["button"]], [pcdata "←"])
+      ~next:([a_class ["button"]], [pcdata "→"])
+      ~bullets:([], bullets_content)
+      ()
+    in
+    let carousel, ribbon, prev, next, bullets = match r with
+      | c, Some r, Some p, Some n, Some b -> c, r, p, n, b
+      | _ -> assert false
     in
     Lwt.return
       [
