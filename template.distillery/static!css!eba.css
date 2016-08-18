@@ -9,7 +9,7 @@ hr {
 }
 
 br {
-    colot: transparent;
+    color: transparent;
 }
 
 a {
@@ -21,7 +21,7 @@ a:hover {
 
 html {
     box-sizing: border-box;
-    font-familiy: sans-serif;
+    font-family: sans-serif;
 }
 
 body {
