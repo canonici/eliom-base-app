@@ -3,8 +3,6 @@
 
  include Eba_handlers
 
- let disconnect = disconnect_handler ()
-
  let upload_user_avatar_handler myid () ((), (cropping, photo)) =
    let avatar_dir =
      List.fold_left Filename.concat
@@ -26,9 +24,6 @@
 ]
 
 [%%client
-
- let disconnect =
-   ~%(Eliom_client.server_function [%derive.json : unit] disconnect)
 
   let set_personal_data_handler' =
     let set_personal_data_rpc =
@@ -130,10 +125,6 @@ let%shared password_form ~service () = Eliom_content.Html.D.(
     ]
   )
  )
-
- let disconnect_handler () () =
-   let%lwt () = disconnect () in
-   main_service_handler None () ()
 
  let about_handler userid_o () () = Eliom_content.Html.F.(
   %%%MODULE_NAME%%%_container.page userid_o [
