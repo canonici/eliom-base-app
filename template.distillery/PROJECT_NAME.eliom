@@ -32,9 +32,9 @@ let () =
     ~service:Eba_services.connect_service
     Eba_handlers.connect_handler;
 
-  Eliom_registration.Action.register
+  %%%MODULE_NAME%%%_base.App.register
     ~service:Eba_services.disconnect_service
-    %%%MODULE_NAME%%%_handlers.disconnect_handler;
+    (%%%MODULE_NAME%%%_page.page %%%MODULE_NAME%%%_handlers.disconnect_handler);
 
   Eliom_registration.Any.register
     ~service:Eba_services.activation_service
