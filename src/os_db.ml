@@ -393,7 +393,7 @@ module User = struct
 
   let emails_of_userid userid = Utils.all run_view
     ~success:(fun r -> Lwt.return @@ List.map (fun a -> a#!email) r)
-    ~fail:(Lwt.fail_with No_such_resource)
+    ~fail:(Lwt.fail No_such_resource)
     <:view< { t2.email }
      | t1 in $users_table$;
        t2 in $emails_table$;
