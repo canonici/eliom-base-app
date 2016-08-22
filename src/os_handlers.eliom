@@ -261,6 +261,14 @@ let%server add_mail_handler userid () email =
     Lwt.return_unit
   end
 
+let%client add_mail_handler =
+  let rpc =
+    ~%(Eliom_client.server_function [%derive.json: string]
+	 (Os_session.connected_rpc 
+	    (fun id mail -> add_mail_handler id () mail)))
+  in
+  fun (_:int64) () mail -> rpc mail
+
 [%%shared
    let _ = Os_comet.__link (* to make sure eba_comet is linked *)
 ]
