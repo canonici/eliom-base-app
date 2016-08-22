@@ -255,10 +255,11 @@ let%server add_mail_handler userid () email =
   let%lwt available = Os_db.Email.available email in
   if available then
     send_act email userid
-  else
+  else begin
     Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
     Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
     Lwt.return_unit
+  end
 
 [%%shared
    let _ = Os_comet.__link (* to make sure eba_comet is linked *)
