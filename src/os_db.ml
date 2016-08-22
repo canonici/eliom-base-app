@@ -131,6 +131,7 @@ let activation_table :
   <:table< activation (
        activationkey text NOT NULL,
        userid bigint NOT NULL,
+       email citext NOT NULL,
        creationdate timestamptz NOT NULL DEFAULT(current_timestamp ())
            ) >>
 
@@ -180,6 +181,11 @@ module Utils = struct
     | r::_ -> success r
     | _ -> fail
 
+  let all f ~success ~fail q =
+    f q >>= function
+    | [] -> fail
+    | r -> success r
+
   let password_of d = <:value< $d$.password>>
     
   let avatar_of d = <:value< $d$.avatar>>
@@ -200,9 +206,11 @@ module Email = struct
   let available email = one run_query
     ~success:(fun _ -> Lwt.return_false)
     ~fail:Lwt.return_true
-    <:select< row | row in $emails_table$;
-                    row.email = $string:email$;
-                    row.validated = $bool:true$ >>
+    <:select< row
+     | row in $emails_table$;
+       row.email = $string:email$;
+       row.validated
+    >>
 
 end
 
@@ -211,27 +219,47 @@ module User = struct
   let userid_of_email email = one run_view
     ~success:(fun u -> Lwt.return u#!userid)
     ~fail:(Lwt.fail No_such_resource)
-    <:view< { t1.userid } |
-              t1 in $users_table$;
-              t2 in $emails_table$;
-              t1.userid = t2.userid;
-              t2.email = $string:email$ >>
+    <:view< { t1.userid }
+     | t1 in $users_table$;
+       t2 in $emails_table$;
+       t1.userid = t2.userid;
+       t2.email = $string:email$
+    >>
 
   let is_registered email =
     try_lwt
       lwt _ = userid_of_email email in
       Lwt.return_true
     with No_such_resource -> Lwt.return_false
-
+(*
   let get_email_validated userid = one run_query
     ~success:(fun x -> Lwt.return x#!validated)
     ~fail:Lwt.return_false
     (<:select< row | row in $emails_table$; row.userid = $int64:userid$ >>)
-
-  let set_email_validated userid = run_query
-    <:update< e in $emails_table$ := {validated = $bool:true$}
-     | e.userid = $int64:userid$
+*)
+  let get_email_validated userid email = one run_query
+    ~success:(fun _ -> Lwt.return_true)
+    ~fail:Lwt.return_false
+    <:select< row |
+      row in $emails_table$;
+      row.userid = $int64:userid$;
+      row.email  = $string:email$;
+      row.validated
     >>
+
+  let set_email_validated userid email = run_query
+    <:update< e in $emails_table$ := {validated = $bool:true$}
+     | e.userid = $int64:userid$;
+       e.email  = $string:email$
+    >>
+
+  let add_activationkey ~act_key userid email = run_query
+     <:insert< $activation_table$ :=
+      { userid = $int64:userid$;
+        email  = $string:email$;
+        activationkey  = $string:act_key$;
+        creationdate   = activation_table?creationdate }
+      >>
 
   let add_preregister email = run_query
   <:insert< $preregister_table$ := { email = $string:email$ } >>
@@ -242,7 +270,9 @@ module User = struct
   let is_preregistered email = one run_view
     ~success:(fun _ -> Lwt.return_true)
     ~fail:Lwt.return_false
-    (<:view< { r.email } | r in $preregister_table$; r.email = $string:email$ >>)
+    <:view< { r.email }
+     | r in $preregister_table$;
+       r.email = $string:email$ >>
 
   let all ?(limit = 10L) () = run_query
     <:select< { email = a.email } limit $int64:limit$
@@ -317,13 +347,6 @@ module User = struct
      | d.userid = $int64:userid$
      >>
 
-   let add_activationkey ~act_key userid = run_query
-     <:insert< $activation_table$ :=
-      { userid = $int64:userid$;
-        activationkey  = $string:act_key$;
-        creationdate = activation_table?creationdate }
-      >>
-
    let verify_password ~email ~password =
      if password = "" then Lwt.fail No_such_resource
      else
@@ -353,38 +376,39 @@ module User = struct
     ~fail:(Lwt.fail No_such_resource)
     <:view< t | t in $users_table$; t.userid = $int64:userid$ >>
 
-  let userid_of_activationkey act_key = full_transaction_block (fun dbh ->
+  let userdata_of_activationkey act_key = full_transaction_block (fun dbh ->
     one (Lwt_Query.view dbh)
       ~fail:(Lwt.fail No_such_resource)
       <:view< t | t in $activation_table$; t.activationkey = $string:act_key$ >>
       ~success:(fun t ->
 	let userid = t#!userid in
+	let email  = t#!email in
 	lwt () = Lwt_Query.query dbh
 	  <:delete< r in $activation_table$
-                  | r.activationkey = $string:act_key$ >>
+           | r.activationkey = $string:act_key$ >>
 	in
-	Lwt.return userid
+	Lwt.return (userid, email)
       )
   )
 
-  let emails_of_userid userid =
-    lwt r = run_view <:view< { t2.email } |
-               t1 in $users_table$;
-               t2 in $emails_table$;
-               t1.userid = t2.userid;
-               t1.userid = $int64:userid$;
-      >>
-    in
-    Lwt.return @@ List.map (fun a -> a#!email) r
+  let emails_of_userid userid = Utils.all run_view
+    ~success:(fun r -> Lwt.return @@ List.map (fun a -> a#!email) r)
+    ~fail:(Lwt.fail_with No_such_resource)
+    <:view< { t2.email }
+     | t1 in $users_table$;
+       t2 in $emails_table$;
+       t1.userid = t2.userid;
+       t1.userid = $int64:userid$;
+    >>
 
   let email_of_userid userid = one run_view
     ~success:(fun e -> Lwt.return e#!email)
     ~fail:(Lwt.fail No_such_resource)
-    <:view< { t2.email } limit 1 |
-              t1 in $users_table$;
-              t2 in $emails_table$;
-              t1.userid = t2.userid;
-              t1.userid = $int64:userid$;
+    <:view< { t2.email } limit 1
+     | t1 in $users_table$;
+       t2 in $emails_table$;
+       t1.userid = t2.userid;
+       t1.userid = $int64:userid$;
     >>
 
   let get_users ?pattern () =
