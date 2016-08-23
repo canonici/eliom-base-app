@@ -1,5 +1,5 @@
-(* Ocsigen-start
- * http://www.ocsigen.org/ocsigen-start
+(* Eliom-base-app
+ * http://www.ocsigen.org/eliom-base-app
  *
  * Copyright (C) 2014
  *      Charly Chevalier
@@ -443,7 +443,7 @@ module User = struct
                           ->
                           (PGOCaml.int64_of_string userid,
                            firstname, lastname, avatar, password <> None)
-                        | _ -> failwith "Os_db.get_users")
+                        | _ -> failwith "Eba_db.get_users")
                       l))
 
 end
