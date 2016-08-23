@@ -33,16 +33,19 @@ val is_complete : t -> bool
 
 val emails_of_user : t -> string Lwt.t
 
-val add_activationkey : act_key:string -> int64 -> string -> unit Lwt.t
+val add_activationkey :
+  act_key:string -> userid:int64 -> email:string -> unit Lwt.t
+
 val verify_password : email:string -> password:string -> int64 Lwt.t
 
 (** returns user information.
     Results are cached in memory during page generation. *)
 val user_of_userid : int64 -> t Lwt.t
 
-val userdata_of_activationkey : string -> (int64 * string) Lwt.t
-(** Retrieve an userid from an activation key. May raise [No_such_resource] if
-    the activation key is not found (or outdated). *)
+val userid_and_email_of_activationkey : string -> (int64 * string) Lwt.t
+(** Retrieve the userid and email corresponding to an activation key.
+    May raise [No_such_resource] if the activation key is not found
+    (or outdated). *)
 
 val userid_of_email : string -> int64 Lwt.t
 
