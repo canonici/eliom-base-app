@@ -231,12 +231,7 @@ module User = struct
       lwt _ = userid_of_email email in
       Lwt.return_true
     with No_such_resource -> Lwt.return_false
-(*
-  let get_email_validated userid = one run_query
-    ~success:(fun x -> Lwt.return x#!validated)
-    ~fail:Lwt.return_false
-    (<:select< row | row in $emails_table$; row.userid = $int64:userid$ >>)
-*)
+
   let get_email_validated userid email = one run_query
     ~success:(fun _ -> Lwt.return_true)
     ~fail:Lwt.return_false
@@ -410,6 +405,13 @@ module User = struct
        t1.userid = t2.userid;
        t1.userid = $int64:userid$;
     >>
+
+  let add_mail_to_user userid email = run_query
+    <:insert< $emails_table$ :=
+      { email = $string:email$;
+        userid  = $int64:userid$;
+        validated = emails_table?validated
+      } >>
 
   let get_users ?pattern () =
     full_transaction_block (fun dbh ->
