@@ -131,62 +131,47 @@ module Connection = struct
 
 end
 
+module Settings = struct
 
-let%server settings_content =
-  let none = [%client ((fun () -> ()) : unit -> unit)] in
-  fun user ->
-    Eliom_content.Html.D.(
-      [
-	div ~a:[a_class ["os-welcome-box"]] [
-	  p [pcdata "Change your password:"];
-	  Forms.password_form ~service:Os_services.set_password_service' ();
-	  br ();
-	  Os_userbox.upload_pic_link
-	    none
-            %%%MODULE_NAME%%%_services.upload_user_avatar_service
-	    (Os_user.userid_of_user user);
-	  br ();
-	  Os_userbox.reset_tips_link none;
-	  br ();
-	  p [pcdata "Link a new email to your account:"];
-	  Os_view.generic_email_form ~service:Os_services.add_mail_service ()
+  let settings_content =
+    let none = [%client ((fun () -> ()) : unit -> unit)] in
+    fun user ->
+      Eliom_content.Html.D.(
+	[
+	  div ~a:[a_class ["os-welcome-box"]] [
+	    p [pcdata "Change your password:"];
+	    Forms.password_form ~service:Os_services.set_password_service' ();
+	    br ();
+	    Os_userbox.upload_pic_link
+	      none
+              %%%MODULE_NAME%%%_services.upload_user_avatar_service
+	      (Os_user.userid_of_user user);
+	    br ();
+	    Os_userbox.reset_tips_link none;
+	    br ();
+	    p [pcdata "Link a new email to your account:"];
+	    Os_view.generic_email_form ~service:Os_services.add_mail_service ()
+	  ]
 	]
-      ]
-    )
+      )
 
-let%shared settings_button () = Eliom_content.Html.D.(
-  let button =
-    button ~a:[a_class ["btn";"button"]] [pcdata "Settings"]
-  in
-  ignore
-    [%client
-        (Lwt.async (fun () ->
-          Lwt_js_events.clicks
-            (Eliom_content.Html.To_dom.of_element ~%button)
-            (fun _ _ ->
-	      Eliom_client.change_page
-		~service:%%%MODULE_NAME%%%_services.settings_service () ()
-	    )
-	 )
-           : _)
-    ];
-  div [button]
-)
+  let settings_button () = Eliom_content.Html.D.(
+    let button =
+      button ~a:[a_class ["btn";"button"]] [pcdata "Settings"]
+    in
+    ignore
+      [%client
+          (Lwt.async (fun () ->
+            Lwt_js_events.clicks
+              (Eliom_content.Html.To_dom.of_element ~%button)
+              (fun _ _ ->
+		Eliom_client.change_page
+		  ~service:%%%MODULE_NAME%%%_services.settings_service () ()
+	      )
+	   )
+             : _)
+      ];
+    div [button]
+  )
 
-let%server settingsdiv userid_o () :
-    [`Div] Eliom_content.Html.elt list Lwt.t =
-  let open Eliom_content.Html.F in
-  let%lwt user_o = %%%MODULE_NAME%%%_container.get_user_data userid_o in
-  match user_o with
-  | None ->
-    Lwt.return @@ [div []]
-  | Some user ->
-    Lwt.return @@ settings_content user
-
-let%client settingsdiv =
-  let rpc = ~%(Eliom_client.server_function [%derive.json : unit] 
-		 (Os_session.Opt.connected_rpc settingsdiv))
-  in
-  fun userid_o -> rpc
-
-
+end

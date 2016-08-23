@@ -91,7 +91,12 @@
  )
 
  let settings_handler userid_o () () =
-   let%lwt content = %%%MODULE_NAME%%%_content.settingsdiv userid_o () in
+   let%lwt user = %%%MODULE_NAME%%%_container.get_user_data userid_o in
+   let content = match user with
+     | Some user ->
+       %%%MODULE_NAME%%%_content.Settings.settings_content user
+     | None -> []
+   in
    %%%MODULE_NAME%%%_container.page userid_o content
 
 ]
