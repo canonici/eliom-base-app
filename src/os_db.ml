@@ -171,7 +171,7 @@ module Utils = struct
 
   let run_query q = full_transaction_block (fun dbh ->
     Lwt_Query.query dbh q)
-  
+
   let run_view q = full_transaction_block (fun dbh ->
     Lwt_Query.view dbh q)
 
@@ -227,17 +227,6 @@ module User = struct
     data : string;
   }
 
-  let userid_of_email email = one run_view
-    ~success:(fun u -> Lwt.return u#!userid)
-    ~fail:(Lwt.fail No_such_resource)
-    <:view< { t1.userid }
-     | t1 in $users_table$;
-       t2 in $emails_table$;
-       t1.userid = t2.userid;
-       t2.email = $string:email$
-    >>
-
-
   exception Invalid_activation_key of int64 (* userid *)
 
   let userid_of_email email = one run_view
@@ -274,8 +263,9 @@ module User = struct
 
   let add_activationkey ?(autoconnect=false)
       ?(action="activation") ?(data="") ?(validity=1L)
-      ~act_key ~userid ~email () = run_query
-    <:insert< $activation_table$ :=
+      ~act_key ~userid ~email () =
+    run_query
+     <:insert< $activation_table$ :=
       { userid = $int64:userid$;
         email  = $string:email$;
         action = $string:action$;
